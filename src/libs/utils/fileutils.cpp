@@ -389,10 +389,11 @@ FilePath FilePath::resolvePath(const QString &fileName) const
 
 FilePath FileUtils::commonPath(const FilePath &oldCommonPath, const FilePath &filePath)
 {
-    FilePath newCommonPath = oldCommonPath;
-    while (!newCommonPath.isEmpty() && !filePath.isChildOf(newCommonPath))
+    FilePath newCommonPath = oldCommonPath.canonicalPath();
+    FilePath canonicalFilePath = filePath.canonicalPath();
+    while (!newCommonPath.isEmpty() && !canonicalFilePath.isChildOf(newCommonPath))
         newCommonPath = newCommonPath.parentDir();
-    return newCommonPath.canonicalPath();
+    return newCommonPath;
 }
 
 // Copied from qfilesystemengine_win.cpp

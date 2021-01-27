@@ -62,6 +62,8 @@ static FolderNode *recursiveFindOrCreateFolderNode(FolderNode *folder,
                                                    const FolderNode::FolderNodeFactory &factory)
 {
     Utils::FilePath path = overrideBaseDir.isEmpty() ? folder->filePath() : overrideBaseDir;
+    Utils::FilePath canonicalPath = path.canonicalPath();
+    Utils::FilePath canonicalDirectory = directory.canonicalPath();
 
     Utils::FilePath directoryWithoutPrefix;
     bool isRelative = false;
@@ -70,9 +72,9 @@ static FolderNode *recursiveFindOrCreateFolderNode(FolderNode *folder,
         directoryWithoutPrefix = directory;
         isRelative = false;
     } else {
-        if (directory.isChildOf(path) || directory == path) {
+        if (canonicalDirectory.isChildOf(canonicalPath) || canonicalDirectory == canonicalPath) {
             isRelative = true;
-            directoryWithoutPrefix = directory.relativeChildPath(path);
+            directoryWithoutPrefix = canonicalDirectory.relativeChildPath(canonicalPath);
         } else {
             isRelative = false;
             path.clear();
