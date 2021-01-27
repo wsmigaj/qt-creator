@@ -30,6 +30,8 @@
 #include <coreplugin/icore.h>
 #include <projectexplorer/projectexplorerconstants.h>
 
+#include <QMessageBox>
+
 namespace CMakeProjectManager {
 namespace Internal {
 
@@ -70,6 +72,8 @@ CMakeSpecificSettingWidget::CMakeSpecificSettingWidget(CMakeSpecificSettings *se
         m_ui.neverCopyRadio->setChecked(true);
         break;
     }
+
+    m_ui.showSourceGroupsCheckBox->setChecked(settings->showSourceGroupsSetting());
 }
 
 void CMakeSpecificSettingWidget::apply()
@@ -77,6 +81,16 @@ void CMakeSpecificSettingWidget::apply()
     int popupSetting = m_ui.newFileAddedCopyToCpliSettingGroup->checkedId();
     m_settings->setAfterAddFileSetting(popupSetting == -1 ? AfterAddFileAction::ASK_USER
                                                   : static_cast<AfterAddFileAction>(popupSetting));
+
+    const bool newShowSourceGroups = m_ui.showSourceGroupsCheckBox->isChecked();
+    if (newShowSourceGroups != m_settings->showSourceGroupsSetting())
+    {
+      QMessageBox::information(Core::ICore::dialogParent(), tr("Rescan Required"),
+          tr("Changes to the 'Show source groups' option will not affect currently open projects "
+             "until they are rescanned or reopened."));
+    }
+
+    m_settings->setShowSourceGroupsSetting(newShowSourceGroups);
     m_settings->toSettings(Core::ICore::settings());
 }
 

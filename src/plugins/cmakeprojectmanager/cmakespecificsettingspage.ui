@@ -61,6 +61,16 @@
     </widget>
    </item>
    <item>
+    <widget class="QCheckBox" name="showSourceGroupsCheckBox">
+     <property name="toolTip">
+      <string>Show folders corresponding to CMake source groups (e.g. Header Files, Source Files) in the Projects tree.</string>
+     </property>
+     <property name="text">
+      <string>Show source groups in Projects tree</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>

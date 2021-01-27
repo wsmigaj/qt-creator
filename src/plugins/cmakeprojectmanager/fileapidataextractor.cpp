@@ -25,6 +25,8 @@
 
 #include "fileapidataextractor.h"
 
+#include "cmakeprojectplugin.h"
+#include "cmakespecificsettings.h"
 #include "fileapiparser.h"
 #include "projecttreehelper.h"
 
@@ -118,6 +120,18 @@ Configuration extractConfiguration(std::vector<Configuration> &codemodel, QStrin
     return result;
 }
 
+/// Replace all existing source groups with a single unnamed source group and assign all source
+/// files to that group.
+void collapseSourceGroups(std::vector<TargetDetails> &targetDetails)
+{
+  for (TargetDetails &td : targetDetails)
+  {
+    td.sourceGroups = {""};
+    for (SourceInfo &si : td.sources)
+      si.sourceGroup = 0;
+  }
+}
+
 class PreprocessedData
 {
 public:
@@ -153,6 +167,15 @@ PreprocessedData preprocess(FileApiData &data,
     CMakeFileResult cmakeFileResult = extractCMakeFilesData(data.cmakeFiles,
                                                             sourceDirectory,
                                                             buildDirectory);
+
+    CMakeProjectManager::Internal::CMakeSpecificSettings *settings
+        = CMakeProjectManager::Internal::CMakeProjectPlugin::projectTypeSpecificSettings();
+    if (!settings->showSourceGroupsSetting())
+    {
+      // Move all source files to an unnamed source group (which, being unnamed, won't be displayed
+      // in the Projects tree).
+      collapseSourceGroups(data.targetDetails);
+    }
 
     result.cmakeFiles = std::move(cmakeFileResult.cmakeFiles);
     result.cmakeNodesSource = std::move(cmakeFileResult.cmakeNodesSource);

@@ -31,6 +31,7 @@ namespace Internal {
 namespace {
 static const char SETTINGS_KEY[] = "CMakeSpecificSettings";
 static const char AFTER_ADD_FILE_ACTION_KEY[] = "ProjectPopupSetting";
+static const char SHOW_SOURCE_GROUPS_KEY[] = "ShowSourceGroupsSetting";
 static const char NINJA_PATH[] = "NinjaPath";
 }
 
@@ -40,6 +41,7 @@ void CMakeSpecificSettings::fromSettings(QSettings *settings)
     m_afterAddFileToProjectSetting = static_cast<AfterAddFileAction>(
                               settings->value(rootKey + AFTER_ADD_FILE_ACTION_KEY,
                                               static_cast<int>(AfterAddFileAction::ASK_USER)).toInt());
+    m_showSourceGroupsSetting = settings->value(rootKey + SHOW_SOURCE_GROUPS_KEY, true).toBool();
 
     m_ninjaPath = Utils::FilePath::fromUserInput(
         settings->value(rootKey + NINJA_PATH, QString()).toString());
@@ -49,6 +51,7 @@ void CMakeSpecificSettings::toSettings(QSettings *settings) const
 {
     settings->beginGroup(QString(SETTINGS_KEY));
     settings->setValue(QString(AFTER_ADD_FILE_ACTION_KEY), static_cast<int>(m_afterAddFileToProjectSetting));
+    settings->setValue(QString(SHOW_SOURCE_GROUPS_KEY), m_showSourceGroupsSetting);
     settings->endGroup();
 }
 }
